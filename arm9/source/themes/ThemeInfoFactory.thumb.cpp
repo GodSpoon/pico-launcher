@@ -2,6 +2,7 @@
 #include "common.h"
 #include <memory>
 #include "fat/File.h"
+#include "fat/Directory.h"
 #include "json/ArduinoJson.h"
 #include "core/mini-printf.h"
 #include "core/math/Rgb.h"
@@ -101,4 +102,31 @@ std::unique_ptr<ThemeInfo> ThemeInfoFactory::CreateFromThemeFolder(const TCHAR* 
     }
 
     return fromJson(folderName, json);
+}
+
+u32 ThemeInfoFactory::EnumerateThemes(ThemeInfo* outThemes[], u32 maxThemes) const
+{
+    Directory dir;
+    if (dir.Open("/_pico/themes/") != FR_OK)
+        return 0;
+
+    u32 count = 0;
+    FILINFO fileInfo;
+    while (count < maxThemes)
+    {
+        if (dir.Read(&fileInfo) != FR_OK)
+            break;
+        if (fileInfo.fname[0] == 0)
+            break;
+        if (!(fileInfo.fattrib & AM_DIR))
+            continue;
+
+        auto themeInfo = CreateFromThemeFolder(fileInfo.fname);
+        if (themeInfo)
+        {
+            outThemes[count++] = themeInfo.release();
+        }
+    }
+
+    return count;
 }
