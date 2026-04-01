@@ -38,6 +38,16 @@ public:
         }
     }
 
+    const char* GetCurrentThemeName() const
+    {
+        return _romBrowserController->GetAppSettings().theme.GetString();
+    }
+
+    void SetTheme(const char* themeFolderName)
+    {
+        _romBrowserController->SetTheme(themeFolderName);
+    }
+
     void Close()
     {
         _romBrowserController->HideDisplaySettings();

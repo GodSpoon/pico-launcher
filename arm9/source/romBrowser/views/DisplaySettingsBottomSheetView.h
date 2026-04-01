@@ -4,6 +4,7 @@
 #include "gui/views/Label2DView.h"
 #include "IconButton2DView.h"
 #include "../viewModels/DisplaySettingsViewModel.h"
+#include "themes/ThemeInfoFactory.h"
 
 class IRomBrowserController;
 class MaterialColorScheme;
@@ -12,8 +13,12 @@ class IFontRepository;
 class DisplaySettingsBottomSheetView : public BottomSheetView
 {
 public:
+    static constexpr u32 MAX_VISIBLE_THEMES = 4;
+
     DisplaySettingsBottomSheetView(DisplaySettingsViewModel* viewModel,
         const MaterialColorScheme* materialColorScheme, const IFontRepository* fontRepository);
+
+    ~DisplaySettingsBottomSheetView();
 
     void InitVram(const VramContext& vramContext) override;
     void Update() override;
@@ -35,17 +40,20 @@ private:
     Label2DView _titleLabel;
     Label2DView _layoutLabel;
     Label2DView _sortingLabel;
-    // LabelView _filtersLabel;
+    Label2DView _themeLabel;
 
     std::array<IconButton2DView, 4> _layoutOptions;
     std::array<IconButton2DView, /*3*/2> _sortOptions;
-    // std::array<IconButton2DView, 5> _filterOptions;
+    std::array<IconButton2DView, MAX_VISIBLE_THEMES> _themeOptions;
+
+    ThemeInfo* _themeInfos[ThemeInfoFactory::MAX_THEMES];
+    u32 _themeCount = 0;
 
     const MaterialColorScheme* _materialColorScheme;
 
     IconButton2DView CreateLayoutOptionIconButton();
     IconButton2DView CreateSortOptionIconButton();
-    // IconButton2DView CreateFilterOptionIconButton();
+    IconButton2DView CreateThemeOptionIconButton();
 
     void UpdateLabels();
 
